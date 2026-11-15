@@ -24,6 +24,8 @@ const vocab: FillInExercise = {
     ['wind', 'wiatr'], ['sun', 'słońce'], ['price', 'cena'], ['meeting', 'spotkanie'], ['source', 'źródło'],
   ].map(([en, pl]) => ({
     id: en, baseForm: en, hint: 'Polish noun', answer: pl,
+    // zebranie is also a common word for a meeting; accepted so a correct answer is not marked wrong.
+    accepted: en === 'meeting' ? ['zebranie'] : undefined,
     fallbackCategory: 'vocab-recall', competencies: ['professional-vocabulary' as const],
     explanation: `${en} = ${pl}`,
   })),
@@ -230,7 +232,86 @@ const interview: FillInExercise = {
   ],
 };
 
-export const lessonExercises: Exercise[] = [vocab, l1, l2, l3, interview];
+/**
+ * Professional communication task: confirming a meeting by email.
+ * General skill: before choosing an ending, find the word that governs the
+ * noun and name the case it requires. The subject matter is professional; the
+ * skill applies to any Polish sentence.
+ */
+const email: FillInExercise = {
+  id: 'l-email',
+  type: 'fill-in',
+  track: 'lesson',
+  dimension: 'transfer',
+  layout: 'message',
+  title: 'Confirm a meeting by email',
+  difficulty: 'B1',
+  translation:
+    'Good morning, thank you for your message. I confirm the meeting with our team next week. I do not have the full report yet, but I will send it before the meeting. It is an important project for our company. Kind regards',
+  ruleExplanation:
+    'Each gap is governed by a different word: z ("with") and przed ("before") take the instrumental; a negated verb and dla ("for") take the genitive. Naming the governing word first turns four separate endings into one routine.',
+  prerequisites: ['Instrumental singular', 'Genitive singular', 'Genitive after negation'],
+  conceptIds: ['case-by-governor', 'instr-triggers', 'gen-triggers'],
+  reviewStatus: 'needs-native-review',
+  plan: [
+    { id: 'plan-z', context: 'spotkanie z … (nasz zespół)', governor: 'z', case: 'instrumental', why: 'z meaning "with" takes the instrumental.', competencies: ['instrumental'] },
+    { id: 'plan-nie', context: 'Nie mam jeszcze … (pełny raport)', governor: 'nie mam', case: 'genitive', why: 'mieć takes the accusative, but the verb is negated, so the object is genitive.', competencies: ['genitive'] },
+    { id: 'plan-przed', context: 'przed … (spotkanie)', governor: 'przed', case: 'instrumental', why: 'przed ("before") takes the instrumental.', competencies: ['instrumental'] },
+    { id: 'plan-dla', context: 'dla … (nasza firma)', governor: 'dla', case: 'genitive', why: 'dla ("for") takes the genitive.', competencies: ['genitive'] },
+  ],
+  segments: [
+    'Dzień dobry,\n\ndziękuję za wiadomość. Potwierdzam spotkanie z', { blank: 'a1' }, { blank: 'n1' },
+    'w przyszłym tygodniu. Nie mam jeszcze', { blank: 'a2' }, { blank: 'n2' },
+    ', ale wyślę go przed', { blank: 'n3' },
+    '. To ważny projekt dla', { blank: 'a4' }, { blank: 'n4' }, '.\n\nZ poważaniem',
+  ],
+  blanks: [
+    {
+      id: 'a1', baseForm: 'nasz', hint: 'possessive', answer: 'naszym',
+      misconceptions: [m('nasz', 'instr-trigger', NOM_NOTE), m('naszego', 'instr-trigger', 'naszego is genitive or accusative. After z ("with") the instrumental is required.')],
+      fallbackCategory: 'instr-adj-ending', competencies: ['instrumental', 'adjective-agreement'],
+      explanation: 'Masculine instrumental: nasz → naszym.',
+    },
+    {
+      id: 'n1', baseForm: 'zespół', hint: 'noun, masculine', answer: 'zespołem',
+      misconceptions: [m('zespół', 'instr-trigger', NOM_NOTE), m('zespołu', 'instr-trigger', 'zespołu is the genitive. After z ("with") the instrumental is required.')],
+      fallbackCategory: 'instr-noun-ending', competencies: ['instrumental', 'professional-vocabulary'],
+      explanation: 'Masculine instrumental: zespół → zespołem (ó changes to o).',
+    },
+    {
+      id: 'a2', baseForm: 'pełny', hint: 'adjective', answer: 'pełnego',
+      misconceptions: [m('pełny', 'gen-negation', 'pełny would be right without negation (Mam pełny raport). After nie the object is genitive.')],
+      fallbackCategory: 'gen-ending', competencies: ['genitive', 'adjective-agreement'],
+      explanation: 'Masculine genitive adjective: pełny → pełnego.',
+    },
+    {
+      id: 'n2', baseForm: 'raport', hint: 'noun, masculine', answer: 'raportu',
+      misconceptions: [m('raport', 'gen-negation', 'raport would be right without negation (Mam raport). After nie the object is genitive.'), m('raporta', 'gen-ending', 'raport is one of the masculine nouns for things that take -u.')],
+      fallbackCategory: 'gen-ending', competencies: ['genitive', 'professional-vocabulary'],
+      explanation: 'Masculine genitive noun: raport → raportu.',
+    },
+    {
+      id: 'n3', baseForm: 'spotkanie', hint: 'noun, neuter', answer: 'spotkaniem',
+      misconceptions: [m('spotkanie', 'instr-trigger', 'spotkanie is nominative or accusative. przed requires the instrumental.'), m('spotkania', 'instr-trigger', 'spotkania is the genitive. przed requires the instrumental.')],
+      fallbackCategory: 'instr-noun-ending', competencies: ['instrumental'],
+      explanation: 'Neuter instrumental: spotkanie → spotkaniem.',
+    },
+    {
+      id: 'a4', baseForm: 'nasza', hint: 'possessive', answer: 'naszej',
+      misconceptions: [m('nasza', 'gen-trigger', NOM_NOTE), m('naszą', 'gen-trigger', 'naszą is accusative or instrumental. dla requires the genitive.')],
+      fallbackCategory: 'gen-ending', competencies: ['genitive', 'adjective-agreement'],
+      explanation: 'Feminine genitive: nasza → naszej.',
+    },
+    {
+      id: 'n4', baseForm: 'firma', hint: 'noun, feminine', answer: 'firmy',
+      misconceptions: [m('firma', 'gen-trigger', NOM_NOTE), m('firmę', 'gen-trigger', 'firmę is the accusative. dla requires the genitive.'), m('firmie', 'gen-ending', 'firmie is dative or locative. The feminine genitive ending here is -y.')],
+      fallbackCategory: 'gen-ending', competencies: ['genitive', 'professional-vocabulary'],
+      explanation: 'Feminine genitive noun: firma → firmy.',
+    },
+  ],
+};
+
+export const lessonExercises: Exercise[] = [vocab, l1, l2, l3, interview, email];
 
 export const lesson: Lesson = {
   id: 'lesson-renewables',
@@ -258,8 +339,15 @@ export const lesson: Lesson = {
     { polish: 'spotkanie', english: 'meeting', gender: 'neuter' },
     { polish: 'klient', english: 'client', gender: 'masculine' },
     { polish: 'polityka energetyczna', english: 'energy policy', gender: 'feminine' },
+    { polish: 'zespół', english: 'team', gender: 'masculine' },
+    { polish: 'raport', english: 'report', gender: 'masculine' },
   ],
   exerciseIds: ['l-vocab', 'l-1', 'l-2', 'l-3'],
+  messageTask: {
+    exerciseId: 'l-email',
+    scenario:
+      'A Polish colleague has written to arrange a meeting about a wind-farm project. Reply to confirm it. The reply uses four different governing words, so decide the case for each gap before you type.',
+  },
   interview: {
     question: 'Dlaczego chce Pani / Pan pracować w sektorze energii odnawialnej?',
     questionTranslation: 'Why do you want to work in the renewable energy sector?',

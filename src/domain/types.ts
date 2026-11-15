@@ -118,10 +118,25 @@ export interface Blank {
 
 export type Segment = string | { blank: string };
 
+/** "Which case does this governing word require?" Asked before the learner types. */
+export interface CasePlanRow {
+  id: string;
+  /** The fragment shown, with the governing word in it. */
+  context: string;
+  governor: string;
+  case: GrammaticalCase;
+  why: string;
+  competencies: CompetencyId[];
+}
+
 export interface FillInExercise extends ExerciseBase {
   type: 'fill-in';
   segments: Segment[];
   blanks: Blank[];
+  /** Optional first step: name the case each governor requires. */
+  plan?: CasePlanRow[];
+  /** 'message' keeps line breaks, for emails and notes. */
+  layout?: 'message';
   /** Vocabulary recall items are production of words, not of endings. */
   dimension?: Dimension;
 }
@@ -131,6 +146,8 @@ export type Exercise = CaseIdExercise | FillInExercise;
 export interface RemediationFillItem {
   id: string;
   type: 'fill';
+  /** True when the sentence is an unfamiliar context, not a repeat of the practised pattern. */
+  transfer?: boolean;
   /** What this item tests relative to the original error, e.g. "Same rule, neuter noun". */
   focus: string;
   before: string;
@@ -147,6 +164,7 @@ export interface RemediationFillItem {
 export interface RemediationChoiceItem {
   id: string;
   type: 'choice';
+  transfer?: boolean;
   focus: string;
   sentence: string;
   translation: string;
@@ -158,14 +176,55 @@ export interface RemediationChoiceItem {
 
 export type RemediationItem = RemediationFillItem | RemediationChoiceItem;
 
+/**
+ * A SUSPECTED issue. A wrong form is evidence of what went wrong on the page,
+ * not proof of why the learner wrote it; a DiagnosticProbe asks for the why.
+ */
 export interface ErrorCategory {
   id: string;
   label: string;
   conceptId: string;
-  /** Short targeted explanation shown when this error is detected. */
+  /** Short explanation shown when this issue is suspected. */
   diagnosis: string;
   competencies: CompetencyId[];
   remediation: RemediationItem[];
+}
+
+/** What the learner says they were thinking, mapped to a prepared response. */
+export interface ProbeOption {
+  id: string;
+  text: string;
+  pathwayId: string;
+}
+
+/** A targeted question about the learner's reasoning after a suspected error. */
+export interface DiagnosticProbe {
+  id: string;
+  suspectedCategory: string;
+  exerciseIds: string[];
+  question: string;
+  options: ProbeOption[];
+}
+
+/** The explanation and practice chosen once the learner has stated their reasoning. */
+export interface DiagnosticPathway {
+  id: string;
+  /** The stated reasoning in the third person, for records and the tutor briefing. */
+  belief: string;
+  explanation: string;
+  conceptId: string;
+  /** Practice items; at least one is flagged as an unfamiliar transfer question. */
+  items: RemediationItem[];
+}
+
+/** How far a stated rule can be relied on. */
+export type Reliability = 'reliable' | 'conditional' | 'lexical';
+
+export interface RuleNote {
+  text: string;
+  reliability: Reliability;
+  /** Set when the statement needs confirmation by a qualified teacher. */
+  review?: string;
 }
 
 export interface GrammarTable {
@@ -179,7 +238,7 @@ export interface Concept {
   title: string;
   summary: string;
   tables: GrammarTable[];
-  notes: string[];
+  rules: RuleNote[];
 }
 
 export interface VocabEntry {
@@ -196,6 +255,8 @@ export interface Lesson {
   text: { polish: string; english: string }[];
   vocabulary: VocabEntry[];
   exerciseIds: string[];
+  /** A realistic written task, graded by answer key. */
+  messageTask: { exerciseId: string; scenario: string };
   interview: {
     question: string;
     questionTranslation: string;
@@ -210,6 +271,8 @@ export interface LanguagePack {
   exercises: Exercise[];
   errorCategories: Record<string, ErrorCategory>;
   concepts: Record<string, Concept>;
+  probes: DiagnosticProbe[];
+  pathways: Record<string, DiagnosticPathway>;
   lesson: Lesson;
 }
 
@@ -245,6 +308,8 @@ export interface AttemptEvent {
   errorCategory?: string;
   response: string;
   expected: string;
+  /** True for an unfamiliar transfer question asked after remediation. */
+  transfer?: boolean;
 }
 
 export interface RemediationRecord {
@@ -252,6 +317,21 @@ export interface RemediationRecord {
   categoryId: string;
   correct: number;
   total: number;
+  /** Set when the sequence was chosen from the learner's stated reasoning. */
+  pathwayId?: string;
+  /** Results on the unfamiliar transfer questions within the sequence. */
+  transferCorrect?: number;
+  transferTotal?: number;
+}
+
+/** The learner's own account of why they made an error (self-reported). */
+export interface DiagnosticRecord {
+  at: number;
+  exerciseId: string;
+  probeId: string;
+  suspectedCategory: string;
+  optionId: string;
+  pathwayId: string;
 }
 
 export interface ReasoningNote {
@@ -266,4 +346,6 @@ export interface LearnerState {
   attempts: AttemptEvent[];
   remediations: RemediationRecord[];
   notes: ReasoningNote[];
+  /** Added after the first release; absent in older stored records. */
+  diagnostics: DiagnosticRecord[];
 }

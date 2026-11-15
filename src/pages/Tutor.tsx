@@ -46,27 +46,40 @@ export function Tutor() {
             <h2>Activity</h2>
             <p>
               {b.totals.attempts} graded responses, {b.totals.errors} incorrect. {b.totals.coreCompleted} of {b.totals.coreTotal} core exercises completed.{' '}
-              {b.totals.remediationsCompleted} targeted practice {b.totals.remediationsCompleted === 1 ? 'set' : 'sets'} completed
-              {b.totals.transferFirstTry > 0 && ` (${b.totals.transferFirstTryCorrect} of ${b.totals.transferFirstTry} transfer questions correct at first attempt)`}.
+              {b.totals.remediationsCompleted} targeted practice {b.totals.remediationsCompleted === 1 ? 'set' : 'sets'} completed.{' '}
+              {b.totals.transferFirstTry > 0
+                ? `${b.totals.transferFirstTryCorrect} of ${b.totals.transferFirstTry} unfamiliar transfer sentences correct.`
+                : 'No unfamiliar transfer sentences attempted.'}{' '}
+              Retention has not been assessed.
             </p>
           </section>
           <section>
-            <h2>Observed strengths</h2>
-            {b.strengths.length ? <ul>{b.strengths.map((s) => <li key={s}>{s}</li>)}</ul> : <p className="muted">Not enough evidence yet to call anything a strength.</p>}
+            <h2>Consistently correct so far</h2>
+            {b.strengths.length ? <ul>{b.strengths.map((s) => <li key={s}>{s}</li>)}</ul> : <p className="muted">Too few answers yet to say.</p>}
           </section>
           <section>
-            <h2>Observed weaknesses</h2>
+            <h2>Errors and suspected causes</h2>
+            <p className="muted small">The suspected cause is inferred from the wrong form. The stated reasoning is the learner’s own choice from a short list. Neither is a confirmed diagnosis.</p>
             {b.weaknesses.length ? (
               <ul>
                 {b.weaknesses.map((w) => (
                   <li key={w.categoryId}>
-                    <strong>{w.label}</strong> ({w.count}×).{' '}
+                    <strong>Suspected: {w.label.toLowerCase()}</strong> ({w.count}×).{' '}
                     {w.examples.map((e, i) => (
                       <span key={i}>
                         Wrote <span lang="pl" className="typed">{e.response || '(blank)'}</span> for <span lang="pl" className="expected">{e.expected}</span>.{' '}
                       </span>
                     ))}
-                    <span className="muted">{w.hasRemediation ? (w.outstanding ? 'Targeted practice not yet completed without mistakes.' : 'Targeted practice completed.') : ''}</span>
+{w.statedReasons.length > 0 && (
+                      <span className="stated-inline">Learner’s stated reasoning: {w.statedReasons.join('; ')}. </span>
+                    )}
+                    {w.hasRemediation && (
+                      <span className="muted">
+                        Remediation: {w.practice ? `${w.practice.correct} of ${w.practice.total} correct` : 'not done'}. Transfer:{' '}
+                        {{ correct: 'unfamiliar sentence correct', incorrect: 'unfamiliar sentence incorrect', 'not-attempted': 'not attempted', 'none-in-set': 'not tested' }[w.transfer]}.
+                        Retention: not assessed.
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -75,7 +75,7 @@ describe('progress model', () => {
       attempts: [
         { ...rightAdj, itemId: 'r', dimension: 'recognition' },
         { ...rightAdj, itemId: 'u', dimension: 'understanding', correct: false },
-        { ...rightAdj, itemId: 't', dimension: 'transfer', source: 'remediation' },
+        { ...rightAdj, itemId: 't', dimension: 'transfer', source: 'remediation', transfer: true },
       ],
     });
     const m = competencyMatrix(state).instrumental;

@@ -6,10 +6,12 @@ const WORKING = [
   'Click-to-inspect Polish sentences with word-by-word grammatical annotation',
   'Case identification with multiple-word selection and immediate feedback',
   'Typed noun and adjective forms, graded against a reviewed answer key',
-  'Error diagnosis: known wrong forms are mapped to a specific underlying rule',
+  'Suspected issues: known wrong forms are mapped to a likely underlying rule, labelled as a guess',
+  'Diagnostic questions on two topics: you say which rule you applied, and that choice selects the explanation and practice',
   'Targeted practice sequences that test the same rule on new words and genders',
   '“How do you know?” reasoning questions, graded through structured options',
-  'Progress tracking split into recognition, production, understanding and transfer',
+  'Progress split into first attempts, remediation, transfer to unfamiliar sentences, and retention (not yet assessed)',
+  'Grammar rules labelled as reliable, conditional, or learned word by word',
   'A tutor briefing assembled from your actual errors',
   'Storage in your browser: progress survives a refresh, and can be reset',
 ];
@@ -17,6 +19,7 @@ const WORKING = [
 const NEEDS_AI = [
   'Assessing free-text explanations and open written answers',
   'Diagnosing errors the answer key did not anticipate (today these get a general explanation for the slot)',
+  'Understanding a learner’s reasoning in their own words (today they choose from a prepared list)',
   'Generating new exercises and explanations on your own subjects',
   'Voice conversation, pronunciation practice and interview simulation',
   'A curriculum that adapts over months rather than within a session',
@@ -54,6 +57,7 @@ export function About() {
       <Card title="Accuracy and limits">
         <ul>
           <li>The Polish content covers regular patterns only and is awaiting review by a qualified teacher of Polish. Please report anything that looks wrong.</li>
+          <li>What you say about your own reasoning is recorded as you gave it. It is not verified, and people do not always know why they made an error.</li>
           <li>Scores are simple counts of first attempts. They are not a validated measure of proficiency or of a CEFR level.</li>
           <li>Timeline figures in the plan are planning assumptions, not predictions.</li>
           <li>All data stays in this browser. Clearing site data, or using another device, starts from zero.</li>

@@ -8,6 +8,7 @@ export function LessonPage() {
   const [showEnglish, setShowEnglish] = useState(false);
   const [draft, setDraft] = useState('');
   const interview = getExercise(lesson.interview.exerciseId);
+  const message = getExercise(lesson.messageTask.exerciseId);
 
   return (
     <div className="page narrow">
@@ -67,9 +68,18 @@ export function LessonPage() {
         {interview && <ExerciseView exercise={interview} />}
       </Card>
 
+      <Card title={`${lesson.exerciseIds.length + 4}. Write a short work email`} aside={<span className="pill graded">Graded</span>}>
+        <p>{lesson.messageTask.scenario}</p>
+        <p className="muted small">
+          Both steps are checked against an answer key. The skill practised, finding the governing word before choosing an ending, applies to any
+          Polish sentence, not only to emails.
+        </p>
+        {message && <ExerciseView exercise={message} />}
+      </Card>
+
       <Card title="Your own answer" aside={<span className="pill planned">Not graded · future AI capability</span>}>
         <p>
-          Write two or three sentences of your own in reply to the interview question. In a full version, an AI teaching service would comment on
+          Write two or three sentences of your own: a reply to the interview question, or your own version of the email. In a full version, an AI teaching service would comment on
           grammar, vocabulary and register, and a voice mode would let you rehearse the interview aloud.
         </p>
         <p className="muted small">

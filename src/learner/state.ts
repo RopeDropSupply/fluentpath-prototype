@@ -1,4 +1,4 @@
-import type { AttemptEvent, LearnerProfile, LearnerState, ReasoningNote, RemediationRecord } from '../domain/types';
+import type { AttemptEvent, DiagnosticRecord, LearnerProfile, LearnerState, ReasoningNote, RemediationRecord } from '../domain/types';
 
 /** Learner-state model: an append-only event log plus the profile. Pure reducers. */
 
@@ -8,6 +8,7 @@ export const emptyState = (): LearnerState => ({
   attempts: [],
   remediations: [],
   notes: [],
+  diagnostics: [],
 });
 
 export const demoProfile: LearnerProfile = {
@@ -29,6 +30,7 @@ export type Action =
   | { type: 'setProfile'; profile: LearnerProfile }
   | { type: 'recordAttempts'; attempts: NewAttempt[]; at?: number }
   | { type: 'recordRemediation'; record: Omit<RemediationRecord, 'at'>; at?: number }
+  | { type: 'recordDiagnostic'; record: Omit<DiagnosticRecord, 'at'>; at?: number }
   | { type: 'addNote'; note: Omit<ReasoningNote, 'at'>; at?: number }
   | { type: 'resetProgress' }
   | { type: 'resetAll' };
@@ -52,6 +54,8 @@ export function reduce(state: LearnerState, action: Action): LearnerState {
     }
     case 'recordRemediation':
       return { ...state, remediations: [...state.remediations, { ...action.record, at: action.at ?? Date.now() }] };
+    case 'recordDiagnostic':
+      return { ...state, diagnostics: [...state.diagnostics, { ...action.record, at: action.at ?? Date.now() }] };
     case 'addNote':
       return {
         ...state,

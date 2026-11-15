@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { coreExerciseList, getExercise, pack } from '../content';
 import type { Exercise } from '../domain/types';
 import { CORE_SEQUENCE, exerciseStatus, type ExerciseStatus } from '../learner/analytics';
-import { teachingService } from '../services/teachingService';
+import { latestPathwayId, teachingService } from '../services/teachingService';
 import { CaseIdentify } from '../ui/CaseIdentify';
 import { Card, ConceptReference, Disclosure } from '../ui/common';
 import { FillIn } from '../ui/FillIn';
@@ -132,8 +133,12 @@ export function ExercisePage({ id }: { id: string }) {
 }
 
 export function PracticePage({ categoryId }: { categoryId: string }) {
-  const found = teachingService.remediationFor(categoryId);
-  if (!found || found.category.remediation.length === 0) {
+  const { state } = useLearner();
+  // If the learner has said what they were thinking, practise the matching pathway.
+  const [pathwayId] = useState(() => latestPathwayId(state, categoryId));
+  const plan = teachingService.practicePlan(categoryId, pathwayId);
+  const belief = pathwayId ? teachingService.pathway(pathwayId)?.belief : undefined;
+  if (!plan) {
     return (
       <div className="page narrow">
         <h1>No targeted practice for this topic</h1>
@@ -145,10 +150,11 @@ export function PracticePage({ categoryId }: { categoryId: string }) {
     <div className="page narrow">
       <header className="page-head">
         <p className="eyebrow"><a href="#/progress">Progress</a> · Targeted practice</p>
-        <h1>{found.category.label}</h1>
+        <h1>{plan.label}</h1>
+        {belief && <p className="muted">Chosen from what you told us earlier: “{belief.charAt(0).toLowerCase() + belief.slice(1)}”.</p>}
       </header>
       <section className="card">
-        <Remediation key={categoryId} categoryId={categoryId} />
+        <Remediation key={categoryId} plan={plan} />
       </section>
       <nav className="pager" aria-label="Practice navigation">
         <a className="btn" href="#/lab">Grammar lab</a>

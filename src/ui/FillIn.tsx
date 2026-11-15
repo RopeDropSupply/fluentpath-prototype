@@ -5,9 +5,9 @@ import { gradeText, type TextVerdict } from '../grading/grade';
 import { REVEAL_AFTER } from '../learner/analytics';
 import { teachingService } from '../services/teachingService';
 import { ConceptReference, Disclosure, Feedback, PolishKeys, insertAtCaret } from './common';
+import { CasePlan, SuspectedIssue } from './Diagnosis';
 import { useLearner } from './LearnerContext';
 import { Reasoning } from './Reasoning';
-import { Remediation } from './Remediation';
 
 type Phase = 'answering' | 'wrong' | 'revealed' | 'correct';
 type Wrong = Extract<TextVerdict, { verdict: 'incorrect' }>;
@@ -20,8 +20,7 @@ export function FillIn({ exercise }: { exercise: FillInExercise }) {
   const [attempts, setAttempts] = useState(0);
   const [phase, setPhase] = useState<Phase>('answering');
   const [hint, setHint] = useState('');
-  const [practising, setPractising] = useState<string | null>(null);
-  const [practised, setPractised] = useState<string[]>([]);
+  const [planDone, setPlanDone] = useState(!exercise.plan);
   const [active, setActive] = useState(exercise.blanks[0].id);
   const inputs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -79,7 +78,6 @@ export function FillIn({ exercise }: { exercise: FillInExercise }) {
     });
     setVerdicts({});
     setPhase('answering');
-    setPractising(null);
     const first = exercise.blanks.find((b) => !locked.includes(b.id));
     if (first) requestAnimationFrame(() => inputs.current[first.id]?.focus());
   }
@@ -91,20 +89,26 @@ export function FillIn({ exercise }: { exercise: FillInExercise }) {
     .map((id) => teachingService.remediationFor(id))
     .filter((c) => c !== undefined);
 
-  const completedSentence = exercise.segments.map((s) => (typeof s === 'string' ? s : blankById(s.blank).answer)).join(' ').replace(/ ([.,])/g, '$1');
+  const completedSentence = exercise.segments
+    .map((s) => (typeof s === 'string' ? s : blankById(s.blank).answer))
+    .join(' ')
+    .replace(/ ([.,])/g, '$1');
 
   return (
     <div className="exercise">
       <p className="instruction">
         {isVocab ? exercise.translation : <>Type the correct form of each word in brackets. <span className="muted">Sometimes the form does not change.</span></>}
       </p>
+      {exercise.plan && !planDone && <CasePlan exercise={exercise} onDone={() => setPlanDone(true)} />}
+      {exercise.plan && planDone && <p className="eyebrow">Step 2 · Write the forms</p>}
       <form
+        hidden={!planDone}
         onSubmit={(e) => {
           e.preventDefault();
           if (phase === 'answering') check();
         }}
       >
-        <p className={`sentence ${isVocab ? 'vocab-grid' : ''}`} lang="pl">
+        <p className={`sentence ${isVocab ? 'vocab-grid' : ''} ${exercise.layout === 'message' ? 'message' : ''}`} lang="pl">
           {exercise.segments.map((seg, i) => {
             if (typeof seg === 'string') return <span key={i}>{seg} </span>;
             const b = blankById(seg.blank);
@@ -161,39 +165,22 @@ export function FillIn({ exercise }: { exercise: FillInExercise }) {
               </li>
             ))}
           </ul>
-          {phase === 'revealed' && <p className="sentence small" lang="pl">{completedSentence}</p>}
+          {phase === 'revealed' && <p className={`sentence small ${exercise.layout === 'message' ? 'message' : ''}`} lang="pl">{completedSentence}</p>}
         </Feedback>
       )}
 
-      {(phase === 'wrong' || phase === 'revealed') && categories.map(({ category, concept }) => (
-        <div className="diagnosis-card" key={category.id}>
-          <p className="eyebrow">Likely underlying concept</p>
-          <h3>{category.label}</h3>
-          {practising !== category.id && (
-            <>
-              <p>{category.diagnosis}</p>
-              {concept && (
-                <Disclosure label="Explain this: show the rule table">
-                  <ConceptReference concept={concept} />
-                </Disclosure>
-              )}
-            </>
-          )}
-          {category.remediation.length > 0 &&
-            (practising === category.id ? (
-              <Remediation
-                categoryId={category.id}
-                onDone={phase === 'wrong' ? () => { setPractised((p) => [...p, category.id]); retry(); } : undefined}
-              />
-            ) : practised.includes(category.id) ? null : (
-              <button type="button" className="btn primary" onClick={() => setPractising(category.id)}>
-                Practise this rule on new examples ({category.remediation.length} questions)
-              </button>
-            ))}
-        </div>
-      ))}
+      {(phase === 'wrong' || phase === 'revealed') &&
+        categories.map(({ category, concept }) => (
+          <SuspectedIssue
+            key={`${category.id}-${attempts}`}
+            exerciseId={exercise.id}
+            category={category}
+            concept={concept}
+            onPractised={phase === 'wrong' ? retry : undefined}
+          />
+        ))}
 
-      {phase === 'wrong' && !practising && (
+      {phase === 'wrong' && (
         <div className="actions">
           <button type="button" className="btn" onClick={retry}>Try the sentence again</button>
           <span className="muted small">One more attempt before the answer is shown.</span>
@@ -202,7 +189,7 @@ export function FillIn({ exercise }: { exercise: FillInExercise }) {
 
       {phase === 'correct' && (
         <Feedback tone="good" title={attempts === 1 ? 'Correct at the first attempt.' : 'Correct.'}>
-          <p className="sentence small" lang="pl">{completedSentence}</p>
+          <p className={`sentence small ${exercise.layout === 'message' ? 'message' : ''}`} lang="pl">{completedSentence}</p>
         </Feedback>
       )}
 

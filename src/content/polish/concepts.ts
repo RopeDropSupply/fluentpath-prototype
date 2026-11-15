@@ -23,9 +23,11 @@ export const concepts: Record<string, Concept> = {
         ],
       },
     ],
-    notes: [
-      'Masculine nouns that end in -a (kolega, mężczyzna) decline like feminine nouns: z kolegą. Their adjective stays masculine: z dobrym kolegą.',
-      'The masculine/neuter adjective ending -ym/-im is shared with the locative singular, so the governing word decides which case it is.',
+    rules: [
+      { text: 'Feminine nouns take -ą, and feminine adjectives take -ą, whatever the stem.', reliability: 'reliable' },
+      { text: 'Masculine and neuter nouns take -em, spelled -iem after k or g.', reliability: 'reliable' },
+      { text: 'Masculine nouns that end in -a (kolega, mężczyzna) decline like feminine nouns: z kolegą. Their adjective stays masculine: z dobrym kolegą.', reliability: 'conditional' },
+      { text: 'The masculine and neuter adjective ending -ym / -im is also the locative ending, so the form alone does not identify the case. The governing word does.', reliability: 'conditional' },
     ],
   },
   'instr-pl': {
@@ -43,7 +45,10 @@ export const concepts: Record<string, Concept> = {
         ],
       },
     ],
-    notes: ['A few common nouns are irregular (ludzie → ludźmi, dzieci → dziećmi). They are not practised here.'],
+    rules: [
+      { text: 'Nouns of every gender take -ami, and adjectives take -ymi (-imi after k, g or a soft stem).', reliability: 'reliable' },
+      { text: 'A small set of common nouns take -mi instead: ludzie → ludźmi, dzieci → dziećmi, pieniądze → pieniędzmi. They are not practised here.', reliability: 'lexical' },
+    ],
   },
   'instr-triggers': {
     id: 'instr-triggers',
@@ -56,13 +61,19 @@ export const concepts: Record<string, Concept> = {
         rows: [
           ['z = "with" (accompaniment)', 'Rozmawiam z klientem.'],
           ['interesować się, zajmować się', 'Interesuję się kulturą.'],
-          ['być / zostać + noun (profession, role)', 'Jestem inżynierem.'],
+          ['być / zostać + noun (profession, role); not after "To jest…"', 'Jestem inżynierem.'],
           ['Means or instrument, no preposition', 'Jadę autobusem.'],
           ['nad, pod, przed, za, między (location)', 'nad Bałtykiem'],
         ],
       },
     ],
-    notes: ['z + genitive is a different construction meaning "from, out of": Wracam z pracy.'],
+    rules: [
+      { text: 'z meaning "with" takes the instrumental. z meaning "from" or "out of" takes the genitive: Wracam z pracy.', reliability: 'reliable' },
+      { text: 'z is written ze before some consonant clusters, with no change of meaning or case: ze studentami, ze źródeł.', reliability: 'conditional' },
+      { text: 'Which verbs require the instrumental has to be learned verb by verb (interesować się, zajmować się, kierować…).', reliability: 'lexical' },
+      { text: 'być + noun takes the instrumental (Jestem inżynierem), but the pattern "To jest…" takes the nominative (To jest inżynier), and an adjective on its own after być stays nominative (Jestem zmęczony).', reliability: 'conditional' },
+      { text: 'nad, pod, przed, za and między take the instrumental for a location. With movement towards a place, several of them take the accusative instead.', reliability: 'conditional' },
+    ],
   },
   'acc-sg': {
     id: 'acc-sg',
@@ -75,16 +86,21 @@ export const concepts: Record<string, Concept> = {
         headers: ['Noun type', 'Rule', 'Example'],
         rows: [
           ['Masculine animate (people, animals)', 'same as genitive: noun -a, adjective -ego', 'Znam dobrego lekarza.'],
-          ['Masculine inanimate (things)', 'same as nominative', 'Kupuję nowy samochód.'],
+          ['Masculine inanimate (things)', 'normally same as nominative', 'Kupuję nowy samochód.'],
           ['Neuter', 'same as nominative', 'Mam nowe mieszkanie.'],
           ['Feminine in -a', 'noun -ę, adjective -ą', 'Czytam ciekawą książkę.'],
         ],
       },
     ],
-    notes: [
-      'The feminine adjective ends in -ą, not -ę. Only the noun takes -ę.',
-      'Feminine nouns ending in a consonant (noc, rzecz) do not change in the accusative.',
-      'In the plural, masculine personal nouns use the genitive form; all other nouns use the nominative plural form.',
+    rules: [
+      { text: 'Feminine nouns in -a take -ę, and their adjectives take -ą. Only the noun takes -ę.', reliability: 'reliable' },
+      { text: 'Neuter nouns and adjectives have the same form in the accusative as in the nominative.', reliability: 'reliable' },
+      { text: 'Masculine nouns naming people or animals take the genitive form: adjective -ego, noun -a.', reliability: 'reliable' },
+      { text: 'Masculine nouns naming things normally keep the nominative form. This is the default, not an absolute rule (see the next point).', reliability: 'conditional' },
+      { text: 'Some masculine nouns for things are treated as animate in the accusative, mostly in set expressions and everyday speech: grać w tenisa, palić papierosa, mieć pecha. Learn these as you meet them.', reliability: 'lexical', review: 'Confirm which examples to teach as standard and which as colloquial.' },
+      { text: 'Feminine nouns ending in a consonant (noc, rzecz) do not change in the accusative. Masculine nouns ending in -a (kolega) take -ę like feminine nouns: Znam kolegę.', reliability: 'conditional' },
+      { text: 'pani is irregular: its accusative is panią.', reliability: 'lexical' },
+      { text: 'In the plural, masculine personal nouns use the genitive form; all other nouns use the nominative plural form.', reliability: 'reliable' },
     ],
   },
   'gen-sg': {
@@ -99,12 +115,18 @@ export const concepts: Record<string, Concept> = {
           ['Masculine animate', '-a', '-ego', 'dobrego lekarza, nowego psa'],
           ['Masculine inanimate', '-u or -a (learn with each noun)', '-ego', 'wolnego czasu, nowego samochodu; but: chleba'],
           ['Neuter', '-a', '-ego', 'taniego mieszkania, okna'],
-          ['Feminine', '-y; -i after k, g and soft stems', '-ej', 'mojej siostry, nowej pracy, książki, energii'],
+          ['Feminine', '-y; -i after k, g and soft stems; -ii in loanwords in -ia', '-ej', 'mojej siostry, nowej pracy, książki, energii'],
         ],
       },
     ],
-    notes: [
-      'For masculine inanimate nouns there is no fully reliable rule for -u versus -a. Abstract nouns, substances and many loanwords usually take -u (czasu, cukru, problemu).',
+    rules: [
+      { text: 'Masculine and neuter adjectives take -ego; feminine adjectives take -ej.', reliability: 'reliable' },
+      { text: 'Masculine nouns naming people or animals take -a: lekarza, psa.', reliability: 'reliable' },
+      { text: 'Masculine nouns naming things take -u or -a, and this must be learned with each noun. Tendencies only: abstract nouns and substances usually take -u (czasu, cukru); tools, months and most Polish city names usually take -a (noża, stycznia, Krakowa). Loanwords go both ways (problemu, but komputera).', reliability: 'lexical', review: 'Check the tendencies and examples; decide how much of this to present at A2.' },
+      { text: 'Feminine nouns take -y after a hard consonant and after c, cz, sz, ż, rz (siostry, pracy), and -i after k, g and soft consonants (książki, kuchni).', reliability: 'conditional' },
+      { text: 'Feminine nouns in -ia: loanwords take -ii (energia → energii), native words take -i (babcia → babci).', reliability: 'conditional' },
+      { text: 'Neuter nouns in -o and -e take -a: okna, mieszkania, słońca.', reliability: 'reliable' },
+      { text: 'Neuter nouns in -um (muzeum, centrum) do not change at all in the singular.', reliability: 'lexical' },
     ],
   },
   'gen-pl': {
@@ -117,13 +139,16 @@ export const concepts: Record<string, Concept> = {
         headers: ['Noun type', 'Ending', 'Examples'],
         rows: [
           ['Masculine, hard stem', '-ów', 'projekt → projektów · problem → problemów'],
-          ['Feminine in -a, neuter in -o', 'no ending', 'kobieta → kobiet · turbina → turbin · okno → okien'],
+          ['Feminine in -a, neuter in -o', 'no ending (a vowel may be inserted)', 'kobieta → kobiet · turbina → turbin · okno → okien'],
           ['Adjective', '-ych; -ich after k, g, soft stem', 'nowych · polskich'],
         ],
       },
     ],
-    notes: [
-      'This table is simplified. Soft-stem nouns often take -i or -y (lekarzy, elektrowni), and a vowel may be inserted when the ending is dropped (książka → książek).',
+    rules: [
+      { text: 'Adjectives take -ych, or -ich after k, g and soft stems.', reliability: 'reliable' },
+      { text: 'Masculine nouns with a hard stem take -ów: projektów, klientów. Soft and hardened stems vary between -y / -i and -ów (lekarzy, hoteli, but krajów).', reliability: 'conditional' },
+      { text: 'Feminine nouns in -a and neuter nouns in -o drop the ending. A vowel is often inserted to break up the final consonant cluster (książka → książek, okno → okien), and some soft-stem nouns take -i instead (kuchnia → kuchni).', reliability: 'conditional' },
+      { text: 'The genitive plural is the least predictable form in Polish declension. Treat this table as a first approximation and learn the form with each noun.', reliability: 'lexical', review: 'This table is deliberately simplified; confirm it is not misleading.' },
     ],
   },
   'gen-triggers': {
@@ -138,12 +163,19 @@ export const concepts: Record<string, Concept> = {
           ['Negated direct object (accusative → genitive)', 'Mam czas. → Nie mam czasu.'],
           ['Verbs: szukać, potrzebować, używać, uczyć się', 'Szukam pracy.'],
           ['Prepositions: do, od, z ("from"), bez, dla, u', 'prezent dla siostry'],
-          ['Quantity: dużo, mało, więcej, wiele, kilka', 'dużo projektów'],
+          ['Quantity: dużo, mało, więcej, wiele, kilka', 'dużo projektów, dużo czasu'],
           ['Possession or "of"', 'ceny energii'],
         ],
       },
     ],
-    notes: ['For masculine animate nouns the genitive and accusative look identical (brata), so negation changes the case but not the visible form.'],
+    rules: [
+      { text: 'A negated verb changes an accusative object to the genitive. Objects in other cases do not change: Interesuję się sportem → Nie interesuję się sportem.', reliability: 'reliable' },
+      { text: 'The prepositions do, od, bez, dla, u, and z meaning "from", take the genitive.', reliability: 'reliable' },
+      { text: 'Which verbs require the genitive has to be learned verb by verb (szukać, potrzebować, używać, uczyć się, bać się).', reliability: 'lexical' },
+      { text: 'Quantity words (dużo, mało, więcej, wiele, kilka) take the genitive: plural for things you can count (dużo projektów), singular for substances and abstractions (dużo czasu).', reliability: 'conditional' },
+      { text: 'Numerals behave differently: 2, 3 and 4 take the nominative plural (dwa projekty); 5 and above take the genitive plural (pięć projektów).', reliability: 'conditional' },
+      { text: 'For masculine nouns naming people or animals, the genitive and accusative look identical (brata), so negation changes the case without changing the visible form.', reliability: 'conditional' },
+    ],
   },
   'case-by-governor': {
     id: 'case-by-governor',
@@ -162,7 +194,11 @@ export const concepts: Record<string, Concept> = {
         ],
       },
     ],
-    notes: ['The preposition z takes the instrumental when it means "with" and the genitive when it means "from".'],
+    rules: [
+      { text: 'A noun after a preposition takes its case from the preposition, not from the verb.', reliability: 'reliable' },
+      { text: 'An adjective takes the case, number and gender of the noun it describes.', reliability: 'reliable' },
+      { text: 'Several prepositions govern more than one case with different meanings. z takes the instrumental for "with" and the genitive for "from"; w and na take the locative for location and the accusative for direction.', reliability: 'conditional' },
+    ],
   },
 };
 
@@ -194,7 +230,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: [...INS],
       },
       {
-        id: 'rem-instr-noun-3', type: 'fill', focus: 'New situation: no preposition',
+        id: 'rem-instr-noun-3', type: 'fill', transfer: true, focus: 'New situation: no preposition',
         before: 'Jadę do pracy', after: '.', baseForm: 'autobus', hint: 'noun, masculine',
         answer: 'autobusem', translation: 'I go to work by bus.',
         explanation: 'The instrumental also expresses the means of doing something, without any preposition: autobus → autobusem.',
@@ -238,7 +274,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
     label: 'Recognising when the instrumental is required',
     conceptId: 'instr-triggers',
     diagnosis:
-      'This slot requires the instrumental case. The preposition z meaning "with", and verbs such as interesować się and zajmować się, always take the instrumental, whatever the gender of the noun.',
+      'This slot requires the instrumental case. The preposition z meaning "with", and verbs such as interesować się and zajmować się, take the instrumental, whatever the gender of the noun.',
     competencies: [...INS],
     remediation: [
       {
@@ -249,10 +285,10 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: [...INS],
       },
       {
-        id: 'rem-instr-trig-2', type: 'fill', focus: 'być + profession',
+        id: 'rem-instr-trig-2', type: 'fill', transfer: true, focus: 'być + profession',
         before: 'Jestem', after: '.', baseForm: 'student', hint: 'noun, masculine',
         answer: 'studentem', translation: 'I am a student.',
-        explanation: 'A noun that says what someone is, after być, goes in the instrumental: student → studentem.',
+        explanation: 'A noun that says what someone is, after być, goes in the instrumental: student → studentem. (The pattern "To jest student" is different and keeps the nominative.)',
         competencies: [...INS],
       },
       {
@@ -274,7 +310,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
     label: 'Masculine animacy in the accusative',
     conceptId: 'acc-sg',
     diagnosis:
-      'Masculine nouns split in the accusative singular. Animate nouns (people and animals) take the genitive form: noun -a, adjective -ego. Inanimate nouns keep the nominative form.',
+      'Masculine nouns split in the accusative singular. Nouns for people and animals take the genitive form: noun -a, adjective -ego. Nouns for things normally keep the nominative form.',
     competencies: [...ACC],
     remediation: [
       {
@@ -292,7 +328,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: ['accusative', 'adjective-agreement'],
       },
       {
-        id: 'rem-anim-3', type: 'fill', focus: 'Animate: an animal, with an adjective',
+        id: 'rem-anim-3', type: 'fill', transfer: true, focus: 'Animate: an animal, with an adjective',
         before: 'Widzę', after: '.', baseForm: 'duży pies', hint: 'adjective + noun',
         answer: 'dużego psa', translation: 'I see a big dog.',
         explanation: 'Animals count as animate: the adjective takes -ego and the noun -a. The e in pies drops out: psa.',
@@ -305,7 +341,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
     label: 'Feminine accusative endings (-ą and -ę)',
     conceptId: 'acc-sg',
     diagnosis:
-      'In the feminine accusative singular the noun takes -ę but the adjective takes -ą: ciekawą książkę. The ending -ą on a noun belongs to the instrumental.',
+      'In the feminine accusative singular the noun takes -ę but the adjective takes -ą: ciekawą książkę. On a noun in -a, the ending -ą marks the instrumental.',
     competencies: ['accusative', 'adjective-agreement'],
     remediation: [
       {
@@ -323,7 +359,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: ['accusative', 'adjective-agreement'],
       },
       {
-        id: 'rem-accf-3', type: 'fill', focus: 'Contrast: the instrumental of a feminine noun',
+        id: 'rem-accf-3', type: 'fill', transfer: true, focus: 'Contrast: the instrumental of a feminine noun',
         before: 'Piję herbatę z', after: '.', baseForm: 'cytryna', hint: 'noun, feminine',
         answer: 'cytryną', translation: 'I drink tea with lemon.',
         explanation: 'herbatę is the direct object (accusative, -ę). After z ("with") the noun is instrumental, and there the noun does take -ą: cytryną.',
@@ -354,7 +390,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: ['genitive', 'adjective-agreement'],
       },
       {
-        id: 'rem-neg-3', type: 'choice', focus: 'When the form does not change',
+        id: 'rem-neg-3', type: 'choice', transfer: true, focus: 'When the form does not change',
         sentence: 'Nie mam brata.', translation: 'I do not have a brother.',
         question: 'Which case is "brata" here?',
         options: [
@@ -372,7 +408,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
     label: 'Verbs, prepositions and quantities that require the genitive',
     conceptId: 'gen-triggers',
     diagnosis:
-      'This slot requires the genitive. Some verbs (szukać, potrzebować), prepositions (dla, do, bez, od) and quantity words (dużo, więcej) always take the genitive rather than the accusative.',
+      'This slot requires the genitive. Some verbs (szukać, potrzebować), prepositions (dla, do, bez, od) and quantity words (dużo, więcej) take the genitive rather than the accusative.',
     competencies: [...GEN],
     remediation: [
       {
@@ -390,7 +426,7 @@ export const errorCategories: Record<string, ErrorCategory> = {
         competencies: [...GEN],
       },
       {
-        id: 'rem-gentrig-3', type: 'fill', focus: 'A genitive preposition, new noun',
+        id: 'rem-gentrig-3', type: 'fill', transfer: true, focus: 'A genitive preposition, new noun',
         before: 'Piję kawę bez', after: '.', baseForm: 'cukier', hint: 'noun, masculine',
         answer: 'cukru', translation: 'I drink coffee without sugar.',
         explanation: 'bez takes the genitive. The e in cukier drops out: cukru.',
@@ -465,14 +501,14 @@ export const errorCategories: Record<string, ErrorCategory> = {
         id: 'rem-plgen-1', type: 'fill', focus: 'Masculine noun, plural',
         before: 'Mamy dużo', after: '.', baseForm: 'problem (plural)', hint: 'noun, plural',
         answer: 'problemów', translation: 'We have a lot of problems.',
-        explanation: 'Hard-stem masculine nouns take -ów: problemów.',
+        explanation: 'problem has a hard stem, and hard-stem masculine nouns take -ów: problemów.',
         competencies: [...GEN],
       },
       {
         id: 'rem-plgen-2', type: 'fill', focus: 'Feminine noun, plural',
         before: 'W firmie pracuje dużo', after: '.', baseForm: 'kobieta (plural)', hint: 'noun, plural',
         answer: 'kobiet', translation: 'A lot of women work at the company.',
-        explanation: 'Feminine nouns in -a drop the ending in the genitive plural: kobieta → kobiet.',
+        explanation: 'Most feminine nouns in -a drop the ending in the genitive plural: kobieta → kobiet.',
         competencies: [...GEN],
       },
     ],

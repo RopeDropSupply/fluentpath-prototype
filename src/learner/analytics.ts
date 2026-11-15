@@ -21,7 +21,7 @@ export const DIMENSIONS: { id: Dimension; label: string; description: string }[]
   { id: 'recognition', label: 'Recognition', description: 'Identifying a form in a sentence' },
   { id: 'production', label: 'Production', description: 'Typing the correct form unaided' },
   { id: 'understanding', label: 'Understanding', description: 'Choosing the correct reason' },
-  { id: 'transfer', label: 'Transfer', description: 'Applying the rule to new sentences' },
+  { id: 'transfer', label: 'Transfer', description: 'Unfamiliar sentences: after practice, and in lesson tasks' },
 ];
 
 export const competencyLabel = (id: CompetencyId) => COMPETENCIES.find((c) => c.id === id)?.label ?? id;
@@ -30,10 +30,10 @@ export type Status = 'not-assessed' | 'early' | 'needs-work' | 'developing' | 's
 
 export const STATUS_LABEL: Record<Status, string> = {
   'not-assessed': 'Not yet assessed',
-  early: 'Too little evidence',
-  'needs-work': 'Needs work',
-  developing: 'Developing',
-  solid: 'Solid in this sample',
+  early: 'Too few answers to judge',
+  'needs-work': 'Mostly incorrect so far',
+  developing: 'Mixed so far',
+  solid: 'Consistently correct so far',
 };
 
 export interface Cell {
@@ -64,6 +64,8 @@ export function competencyMatrix(state: LearnerState): Matrix {
   }
   for (const a of state.attempts) {
     if (a.attemptNumber !== 1) continue;
+    // Guided practice after an error is reported with the error, not as transfer.
+    if (a.source === 'remediation' && !a.transfer) continue;
     for (const c of a.competencies) {
       const cell = matrix[c]?.[a.dimension];
       if (!cell) continue;
@@ -83,7 +85,10 @@ export function competencyMatrix(state: LearnerState): Matrix {
 // ---------- Exercises ----------
 
 export function itemIds(exercise: Exercise): string[] {
-  const ids = exercise.type === 'case-id' ? exercise.tasks.map((t) => t.id) : exercise.blanks.map((b) => b.id);
+  const ids =
+    exercise.type === 'case-id'
+      ? exercise.tasks.map((t) => t.id)
+      : [...(exercise.plan ?? []).map((r) => r.id), ...exercise.blanks.map((b) => b.id)];
   return exercise.reasoning ? [...ids, exercise.reasoning.id] : ids;
 }
 
@@ -116,7 +121,16 @@ export interface ErrorSummary {
   /** True until the most recent practice set is later than the last error and fully correct. */
   outstanding: boolean;
   hasRemediation: boolean;
+  /** What the learner said they were thinking (self-reported, most recent first). */
+  statedReasons: string[];
+  /** Result of the most recent practice set, if any. */
+  practice?: { correct: number; total: number };
+  /** Result on unfamiliar transfer questions in the most recent practice set. */
+  transfer: 'not-attempted' | 'none-in-set' | 'correct' | 'incorrect';
 }
+
+/** Retention needs repeated sessions days apart, which this prototype does not schedule. */
+export const RETENTION_NOTE = 'Not yet assessed: it needs a later session.';
 
 export function errorSummaries(state: LearnerState): ErrorSummary[] {
   const byCategory = new Map<string, AttemptEvent[]>();
@@ -142,7 +156,26 @@ export function errorSummaries(state: LearnerState): ErrorSummary[] {
       }
     }
     const hasRemediation = category.remediation.length > 0;
+    const statedReasons = [
+      ...new Set(
+        state.diagnostics
+          .filter((d) => d.suspectedCategory === categoryId)
+          .sort((a, b) => b.at - a.at)
+          .map((d) => pack.pathways[d.pathwayId]?.belief)
+          .filter((b): b is string => !!b),
+      ),
+    ];
+    const transfer: ErrorSummary['transfer'] = !latest
+      ? 'not-attempted'
+      : !latest.transferTotal
+        ? 'none-in-set'
+        : latest.transferCorrect === latest.transferTotal
+          ? 'correct'
+          : 'incorrect';
     summaries.push({
+      statedReasons,
+      practice: latest ? { correct: latest.correct, total: latest.total } : undefined,
+      transfer,
       categoryId,
       label: category.label,
       count: errors.length,
@@ -163,6 +196,11 @@ export interface Totals {
   correct: number;
   errors: number;
   remediationsCompleted: number;
+  /** First attempts in exercises and the lesson (not practice after an error). */
+  firstTry: number;
+  firstTryCorrect: number;
+  /** Practice sets finished with every answer correct. */
+  remediationsClean: number;
   transferFirstTry: number;
   transferFirstTryCorrect: number;
   reasoningAnswered: number;
@@ -173,13 +211,18 @@ export interface Totals {
 
 export function totals(state: LearnerState): Totals {
   const first = state.attempts.filter((a) => a.attemptNumber === 1);
-  const transfer = first.filter((a) => a.dimension === 'transfer');
+  // Transfer means an unfamiliar sentence: flagged questions after practice, and lesson tasks.
+  const transfer = first.filter((a) => a.dimension === 'transfer' && (a.source === 'lesson' || a.transfer));
+  const unaided = first.filter((a) => a.source !== 'remediation');
   const reasoning = first.filter((a) => a.dimension === 'understanding');
   return {
     attempts: state.attempts.length,
     correct: state.attempts.filter((a) => a.correct).length,
     errors: state.attempts.filter((a) => !a.correct).length,
     remediationsCompleted: state.remediations.length,
+    firstTry: unaided.length,
+    firstTryCorrect: unaided.filter((a) => a.correct).length,
+    remediationsClean: state.remediations.filter((r) => r.correct === r.total).length,
     transferFirstTry: transfer.length,
     transferFirstTryCorrect: transfer.filter((a) => a.correct).length,
     reasoningAnswered: reasoning.length,
@@ -198,7 +241,7 @@ export function strengths(state: LearnerState): string[] {
     for (const d of DIMENSIONS) {
       const cell = matrix[c.id][d.id];
       if (cell.status === 'solid') {
-        out.push(`${c.label}, ${d.label.toLowerCase()}: ${cell.firstTryCorrect} of ${cell.firstTry} first attempts correct`);
+        out.push(`${c.label}, ${d.label.toLowerCase()}: ${cell.firstTryCorrect} of ${cell.firstTry} first attempts correct (a small sample)`);
       }
     }
   }
@@ -341,6 +384,7 @@ export function briefingToText(b: TutorBriefing, goal: string): string {
   if (goal) lines.push(`Goal: ${goal}`, '');
   lines.push(
     `Activity: ${b.totals.attempts} graded responses, ${b.totals.errors} incorrect, ${b.totals.remediationsCompleted} targeted practice sets completed.`,
+    `Unfamiliar transfer questions: ${b.totals.transferFirstTry ? `${b.totals.transferFirstTryCorrect} of ${b.totals.transferFirstTry} correct` : 'none attempted'}. Retention: not assessed.`,
     '',
     'Observed strengths:',
     ...(b.strengths.length ? b.strengths.map((s) => `- ${s}`) : ['- Not enough evidence yet.']),
@@ -348,7 +392,9 @@ export function briefingToText(b: TutorBriefing, goal: string): string {
     'Observed weaknesses:',
     ...(b.weaknesses.length
       ? b.weaknesses.map(
-          (w) => `- ${w.label}: ${w.count}x. ${w.examples.map((e) => `wrote "${e.response}" for "${e.expected}"`).join('; ')}`,
+          (w) =>
+            `- Suspected: ${w.label} (${w.count}x). ${w.examples.map((e) => `Wrote "${e.response}" for "${e.expected}"`).join('; ')}.` +
+            (w.statedReasons.length ? ` Learner's stated reasoning: ${w.statedReasons.join('; ')}.` : ''),
         )
       : ['- No errors recorded.']),
     '',

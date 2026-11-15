@@ -109,6 +109,7 @@ export function CaseIdentify({ exercise }: { exercise: CaseIdExercise }) {
 
   const caseName = CASE_LABEL[task.targetCase].toLowerCase();
   const category = teachingService.remediationFor(task.errorCategory)?.category;
+  const plan = teachingService.practicePlan(task.errorCategory);
 
   return (
     <div className="exercise">
@@ -199,13 +200,13 @@ export function CaseIdentify({ exercise }: { exercise: CaseIdExercise }) {
             <h3>The rule</h3>
             <p>{exercise.ruleExplanation}</p>
           </div>
-          {anyRevealed && category && category.remediation.length > 0 && (
+          {anyRevealed && plan && (
             practising ? (
-              <Remediation categoryId={category.id} />
+              <Remediation plan={plan} />
             ) : (
               <div className="actions">
                 <button type="button" className="btn" onClick={() => setPractising(true)}>
-                  Practise this skill ({category.remediation.length} short questions)
+                  Practise this skill ({plan.items.length} short questions)
                 </button>
               </div>
             )

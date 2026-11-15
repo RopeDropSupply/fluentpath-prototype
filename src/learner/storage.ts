@@ -28,7 +28,9 @@ export function createLocalStore(storage: KeyValue | undefined, key = STORAGE_KE
         const raw = storage?.getItem(key);
         if (!raw) return emptyState();
         const parsed: unknown = JSON.parse(raw);
-        return isLearnerState(parsed) ? parsed : emptyState();
+        if (!isLearnerState(parsed)) return emptyState();
+        // Records saved before diagnostics existed are kept and completed, not discarded.
+        return { ...parsed, diagnostics: Array.isArray(parsed.diagnostics) ? parsed.diagnostics : [] };
       } catch {
         // Corrupt or unavailable storage: start clean rather than crash.
         return emptyState();

@@ -314,3 +314,47 @@ textarea { resize: vertical; margin: 0.3rem 0 0.5rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 .card-note { margin-top: 0.9rem; padding-top: 0.7rem; border-top: 1px solid var(--line); }
+
+/* ---------- Diagnosis, evidence and rule labels ---------- */
+
+.stated { display: grid; gap: 0.1rem; border-left: 3px solid var(--accent); padding: 0.3rem 0 0.3rem 0.8rem; margin: 0.6rem 0 0.8rem; font-style: italic; }
+.stated .muted { font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; font-weight: 600; }
+.stated-inline { font-style: italic; }
+.remediation-item.is-transfer { border-color: var(--accent); border-width: 1.5px; }
+.transfer-flag { font-size: 0.9rem; margin: 0.2rem 0 0.4rem; }
+.transfer-pill { background: var(--accent); color: #fff; }
+.evidence-list { padding-left: 1.1rem; margin: 0.3rem 0 0.5rem; }
+.evidence-list strong { display: inline; }
+
+.rules { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 0.55rem; font-size: 0.9rem; }
+.rules li { display: grid; gap: 0.2rem; margin: 0; }
+.rules .pill { justify-self: start; }
+.rule-reliable { background: var(--good-soft); color: var(--good); }
+.rule-conditional { background: var(--info-soft); color: var(--info); }
+.rule-lexical { background: var(--case-genitive-soft); color: var(--case-genitive); }
+.review-note { color: var(--muted); font-style: italic; }
+@media (min-width: 620px) { .rules li { grid-template-columns: 9.5rem 1fr; gap: 0.75rem; align-items: start; } }
+
+.evidence { margin: 0 0 0.8rem; display: grid; gap: 0.8rem; }
+.evidence dt { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.evidence dd { margin: 0; }
+.evidence dd:first-of-type { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; }
+
+.ladder { list-style: none; padding: 0; margin: 0.6rem 0; display: grid; gap: 0; font-size: 0.9rem; }
+.ladder li { display: grid; grid-template-columns: 7rem 1fr; gap: 0.6rem; margin: 0; padding: 0.4rem 0 0.4rem 0.9rem; border-left: 3px solid var(--line); }
+.ladder li > span:first-child { font-weight: 600; color: var(--muted); }
+.ladder li.is-done { border-left-color: var(--good); }
+.ladder li.is-partial { border-left-color: #b89a2e; }
+.ladder li.is-bad { border-left-color: var(--bad); }
+@media (max-width: 480px) { .ladder li { grid-template-columns: 1fr; gap: 0; } }
+
+.case-plan { border: 1px solid var(--line); border-radius: 8px; background: #fcfbf8; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+.case-plan ul { list-style: none; padding: 0; margin: 0.6rem 0 0.9rem; display: grid; gap: 0.7rem; }
+.case-plan li { margin: 0; display: grid; gap: 0.3rem; padding-left: 0.7rem; border-left: 3px solid var(--line); }
+.case-plan li.is-correct { border-left-color: var(--good); }
+.case-plan li.is-wrong { border-left-color: var(--bad); }
+.case-plan label { font-family: var(--serif); font-size: 1.08rem; }
+.case-plan select { font: inherit; min-height: 44px; padding: 0.4rem 0.5rem; border: 1.5px solid #aab5ba; border-radius: 8px; background: #fff; color: var(--ink); max-width: 16rem; width: 100%; }
+.case-plan li p { margin: 0; }
+.sentence.message { white-space: pre-line; font-size: 1.15rem; line-height: 1.9; }
+.sentence.message.small { line-height: 1.6; }

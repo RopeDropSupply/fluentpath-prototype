@@ -1,5 +1,6 @@
 import type { ErrorCategory, Exercise, LanguagePack } from '../domain/types';
 import { concepts, errorCategories } from './polish/concepts';
+import { pathways, probes } from './polish/diagnostics';
 import { coreExercises } from './polish/exercises';
 import { lesson, lessonExercises } from './polish/lesson';
 
@@ -10,6 +11,8 @@ export const polish: LanguagePack = {
   exercises: [...coreExercises, ...lessonExercises],
   errorCategories,
   concepts,
+  probes,
+  pathways,
   lesson,
 };
 

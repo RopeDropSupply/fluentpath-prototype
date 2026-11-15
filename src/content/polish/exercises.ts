@@ -120,7 +120,7 @@ const ci2: CaseIdExercise = {
       text: 'pracy', lemma: 'praca', pos: 'Noun', gloss: 'job, work',
       case: 'genitive', number: 'singular', gender: 'feminine',
       governedBy: 'The verb szukać, which requires the genitive',
-      why: 'Feminine nouns take -y in the genitive singular: praca → pracy.',
+      why: 'Feminine nouns take -y or -i in the genitive singular. After c the ending is -y: praca → pracy.',
       relations: 'It is the object of szukam and is described by nowej.',
     },
     {
@@ -139,7 +139,7 @@ const ci2: CaseIdExercise = {
       text: 'firmie', lemma: 'firma', pos: 'Noun', gloss: 'company',
       case: 'locative', number: 'singular', gender: 'feminine',
       governedBy: 'The preposition w (location)',
-      why: 'Feminine nouns in -a take -e in the locative singular, softening the stem: firma → firmie.',
+      why: 'Feminine nouns with a hard stem take -e in the locative singular, and the final consonant softens: firma → firmie. (Other stems take -y or -i: praca → pracy.)',
       relations: 'It is the object of w and is described by dużej and energetycznej.',
     },
     {
@@ -454,7 +454,7 @@ const fi3: FillInExercise = {
       { id: 'a', text: 'Agreement means sharing case, number and gender, not sharing letters. Both are accusative singular feminine; adjectives and nouns simply have different ending sets.', correct: true, feedback: 'Exactly. Adjectives and nouns follow different declension patterns, so the same case can look different on each.' },
       { id: 'b', text: 'They do not agree: the adjective is instrumental and the noun is accusative.', correct: false, feedback: 'An adjective always takes the case of its noun. -ą is the feminine adjective ending for both accusative and instrumental; here it is accusative.' },
       { id: 'c', text: 'The adjective ends in -ą because it comes before the noun.', correct: false, feedback: 'Word order does not change endings. The ending comes from case, number and gender.' },
-      { id: 'd', text: 'It is an exception that has to be memorised for this phrase.', correct: false, feedback: 'It is fully regular: every feminine accusative singular adjective takes -ą, and nouns in -a take -ę.' },
+      { id: 'd', text: 'It is an exception that has to be memorised for this phrase.', correct: false, feedback: 'It is regular: feminine accusative singular adjectives take -ą, and nouns in -a take -ę.' },
     ],
     modelExplanation:
       'czytać takes an accusative object. "książka" is feminine, so the noun takes -ę. The adjective agrees in case, number and gender, and the feminine accusative ending for adjectives is -ą. The endings differ because nouns and adjectives decline with different patterns.',
@@ -502,7 +502,7 @@ const fi4: FillInExercise = {
     options: [
       { id: 'a', text: 'znać takes the accusative, and lekarz is masculine animate, so its accusative has the same form as the genitive.', correct: true, feedback: 'Exactly: the case is accusative, and animacy decides which form the accusative takes.' },
       { id: 'b', text: 'znać requires the genitive.', correct: false, feedback: 'znać takes the accusative: Znam tę książkę. The form only looks genitive because lekarz is animate.' },
-      { id: 'c', text: 'All masculine nouns take -a in the accusative.', correct: false, feedback: 'Inanimate masculine nouns do not change: Znam ten film.' },
+      { id: 'c', text: 'All masculine nouns take -a in the accusative.', correct: false, feedback: 'Masculine nouns for things normally do not change: Znam ten film.' },
       { id: 'd', text: 'The sentence is negated.', correct: false, feedback: 'There is no negation in this sentence.' },
     ],
     modelExplanation:
@@ -519,7 +519,7 @@ const fi5: FillInExercise = {
   title: 'Accusative, masculine inanimate',
   difficulty: 'A2+',
   translation: 'I am buying a new car.',
-  ruleExplanation: 'kupować takes the accusative. samochód is masculine inanimate, so the accusative equals the nominative: nothing changes.',
+  ruleExplanation: 'kupować takes the accusative. samochód is a masculine noun for a thing, and such nouns normally keep the nominative form in the accusative: nothing changes.',
   prerequisites: ['Direct objects', 'Animate and inanimate nouns'],
   conceptIds: ['acc-sg'],
   reviewStatus: 'needs-native-review',
@@ -528,7 +528,7 @@ const fi5: FillInExercise = {
     blank({
       id: 'adj', baseForm: 'nowy', hint: 'adjective', answer: 'nowy',
       misconceptions: [
-        m('nowego', 'acc-animacy', 'The ending -ego is used in the accusative only for people and animals. A car is a thing.'),
+        m('nowego', 'acc-animacy', 'The ending -ego marks a masculine person or animal as direct object. A car is a thing, so the adjective does not change.'),
         m('nowym', 'acc-animacy', 'nowym is instrumental or locative. kupować takes the accusative.'),
       ],
       fallbackCategory: 'acc-animacy', competencies: ['accusative', 'adjective-agreement'],
@@ -538,7 +538,7 @@ const fi5: FillInExercise = {
       id: 'noun', baseForm: 'samochód', hint: 'noun, masculine', answer: 'samochód',
       misconceptions: [
         m('samochodu', 'acc-animacy', 'samochodu is the genitive. An inanimate masculine noun does not change in the accusative.'),
-        m('samochoda', 'acc-animacy', 'The ending -a is used in the accusative only for people and animals. A car is a thing.'),
+        m('samochoda', 'acc-animacy', 'The ending -a marks a masculine person or animal as direct object. samochód is a thing and does not change (and its genitive is samochodu).'),
         m('samochodem', 'acc-animacy', 'samochodem is the instrumental. kupować takes the accusative.'),
       ],
       fallbackCategory: 'acc-animacy', competencies: ['accusative'],

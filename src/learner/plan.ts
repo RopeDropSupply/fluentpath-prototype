@@ -87,7 +87,7 @@ export function buildPlan(profile: LearnerProfile): LearningPlan {
   const work = /work|job|interview|career|profession|business|consult/i.test(`${profile.purpose} ${profile.professionalInterests}`);
   const priorities: LearningPlan['priorities'] = [
     { id: 'instrumental', why: 'Needed constantly for "with", "interested in", "work as" and professions.' },
-    { id: 'genitive', why: 'The most frequent case after the nominative: negation, quantities, "of", many prepositions.' },
+    { id: 'genitive', why: 'Needed in many everyday structures: negation, quantities, "of", many prepositions.' },
     { id: 'accusative', why: 'Direct objects, and the animate/inanimate split that causes persistent errors.' },
     { id: 'adjective-agreement', why: 'Every adjective must match its noun; errors here are immediately audible.' },
     work

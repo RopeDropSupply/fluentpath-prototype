@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Concept, GrammaticalCase } from '../domain/types';
+import type { Concept, GrammaticalCase, Reliability } from '../domain/types';
 import { STATUS_LABEL, type Status } from '../learner/analytics';
 
 export const CASE_LABEL: Record<GrammaticalCase, string> = {
@@ -9,6 +9,12 @@ export const CASE_LABEL: Record<GrammaticalCase, string> = {
   accusative: 'Accusative',
   instrumental: 'Instrumental',
   locative: 'Locative',
+};
+
+export const RELIABILITY_LABEL: Record<Reliability, string> = {
+  reliable: 'Reliable pattern',
+  conditional: 'Conditional pattern',
+  lexical: 'Learn word by word',
 };
 
 export function Card({ title, children, className = '', aside }: { title?: string; children: ReactNode; className?: string; aside?: ReactNode }) {
@@ -56,9 +62,17 @@ export function ConceptReference({ concept }: { concept: Concept }) {
           </table>
         </div>
       ))}
-      {concept.notes.length > 0 && (
-        <ul className="notes">
-          {concept.notes.map((n) => <li key={n}>{n}</li>)}
+      {concept.rules.length > 0 && (
+        <ul className="rules">
+          {concept.rules.map((r) => (
+            <li key={r.text}>
+              <span className={`pill rule-${r.reliability}`}>{RELIABILITY_LABEL[r.reliability]}</span>
+              <span>
+                {r.text}
+                {r.review && <span className="review-note"> ⚑ For teacher review: {r.review}</span>}
+              </span>
+            </li>
+          ))}
         </ul>
       )}
     </div>
